@@ -1,29 +1,35 @@
+const cors = require('cors');
+const http = require('http');
 const express = require("express");
+const socketIO = require("socket.io");
 
 const app = express();
-const expressWS = require('express-ws') (app);
+const server = http.Server(app);
 
-// отправка для всех
-const allWS = expressWS.getWss('/');
+const corsOpt = {
+  origin: '*',
+  methods: 'GET,PATCH,POST,DELETE',
+  optionsSuccessStatus: 204,
+};
 
+const io = socketIO(server, {corsOpt});
+
+app.use(cors());
 app.use(express.json());
 
-app.ws('/', function(ws,req){
-    // слушает клиента (сообщение)
-    ws.on('message', function(msg){
-        console.log(msg); 
-        ws.send(msg);
-        // all
-        allWS.clients.forEach(function(client){
-            client.send(`b: ${msg}`);
-        });
-    });
-    console.log('socket connection', req.testing);
+//const router = require('./router.js');
+//app.use(router);
 
+io.on('connection', function(socket){
+  socket.on('test', (data, options) => {
+    console.log('data: ', data);
+    console.log('options: ', options);
+  })
 });
 
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || '127.0.0.1';
+const HOST = process.env.HOST || "127.0.0.1";
 
-app.listen(PORT, HOST, 
-    () => console.log(`App listening on port ${PORT} on ${HOST}`));
+app.listen(PORT, HOST, () =>
+  console.log(`App listening on port ${PORT} on ${HOST}`)
+);
