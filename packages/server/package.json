@@ -6,13 +6,14 @@
   "homepage": "",
   "license": "ISC",
   "scripts": {
-    "start": "node ./app.js",
-    "build": "nodemon ./app.js"
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "express-ws": "^5.0.2"
   }
 }
