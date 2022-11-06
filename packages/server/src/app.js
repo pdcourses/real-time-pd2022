@@ -3,6 +3,9 @@ const express = require("express");
 const app = express();
 const expressWS = require('express-ws') (app);
 
+// отправка для всех
+const allWS = expressWS.getWss('/');
+
 app.use(express.json());
 
 app.ws('/', function(ws,req){
@@ -10,6 +13,10 @@ app.ws('/', function(ws,req){
     ws.on('message', function(msg){
         console.log(msg); 
         ws.send(msg);
+        // all
+        allWS.clients.forEach(function(client){
+            client.send(`b: ${msg}`);
+        });
     });
     console.log('socket connection', req.testing);
 
