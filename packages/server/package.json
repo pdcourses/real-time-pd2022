@@ -5,16 +5,9 @@
   "author": "pdcourses <freshitpt@gmail.com>",
   "homepage": "",
   "license": "ISC",
-  "main": "lib/server.js",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
-  },
-  "files": [
-    "lib"
-  ],
   "scripts": {
-    "test": "node ./__tests__/server.test.js"
+    "start": "node ./app.js",
+    "build": "nodemon ./app.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
