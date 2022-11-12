@@ -20,26 +20,47 @@ const io = new Server(httpServer, {
 
 const wsHandler = require('./ws');
 
-//io.on('connection', wsHandler.connectionHandler);
-//io.on('disconnect', wsHandler.disconnectHandler);
+const chat = io.of('/chat')
+		.on('connection', function connectionHandler(socket) {
 
-io.on('connection', function connectionH (socket) {
-  socket.broadcast.emit('new-user', socket.id);
-    socket.on('send-new-msg', (user, message) => {
-        message.owner = socket.id;
-        socket.to(user).emit('private-new-msg', message);
-    });
-    socket.on('get-users', () => {
-        io.clients((error, clients) => {
-            const users=[...clients];
-            users.push(users.indexOf(socket.id),1);
-            socket.emit('get-users', users);
-        })
-    });
-    io.on('disconnect', (error) => {
-      console.log('reason:', error);
-    });
-});
+			socket.broadcast.emit('new-user', socket.id);
+
+			socket.on('send-message', (to, message) => {
+
+				message.owner = socket.id;
+
+				socket.to(to).emit('private-message', message);
+
+			});
+
+			socket.on('get-users', () => {
+          const clients = io.of('/chat').sockets;
+					const users = [...clients];
+          users.forEach((u,i) => u.splice(1));
+          /*
+          const sendUsers = [];
+          for(let i=0; i<users.length; i++){
+            //console.log(`client ##${i}`, users[i]);
+            sendUsers[i]=users[i][0];
+          }
+          console.log('clients in chats::', sendUsers);
+          */
+					socket.emit('get-users', users);
+			});
+
+			socket.on('disconnect', () => {
+
+				chat.emit('user-leave', socket.id);
+
+			});
+
+		});
+
+const serverEvent = io.of('/events')
+		.on('connecton', function(socket) {
+
+		});
+
 
 
 const PORT = process.env.PORT || 5000;

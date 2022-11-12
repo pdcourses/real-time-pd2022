@@ -1,12 +1,8 @@
-import socket from "./index.js";
 
-export const wsTest = (data, options) => 
-{
-    console.log('socket client: wsTest, event: test',data,options);
-    socket.emit('test', data, options);
-}
 
-export const emitMessage = (room, message) => 
-socket.emit('message',room, message);
+import {chatSocket} from './index.js';
 
-export const emitJoinToRoom = (room) => socket.emit('join-to-room', room)
+export const emitTest = (data) => chatSocket.emit('test', data);
+export const emitMessage = (room, message) => chatSocket.emit('message', room,
+		message);
+export const emitJoinToRoom = (room) => chatSocket.emit('join-to-room', room);

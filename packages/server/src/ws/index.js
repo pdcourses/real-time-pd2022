@@ -1,4 +1,3 @@
-const { default: socket } = require('../../../client/src/api/ws');
 const {testHandler, messageHandler} = require('./enentHandlers');
 const {joinToRooms} = require('./rooms.js');
 

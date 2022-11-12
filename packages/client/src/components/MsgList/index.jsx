@@ -9,7 +9,7 @@ function MsgList(props) {
             { messages ? (
               messages.map((m, i) => <MsgItem key={i} {...m} />))
               : (
-                <li>no selected chat</li>
+                <li>select chat</li>
               )
         }
     </ul>
