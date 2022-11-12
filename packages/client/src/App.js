@@ -9,7 +9,7 @@ class App extends Component{
   render(){
     return(
     <>
-      <button onClick={ () => wsTest('test', {name: 'Vasya'})}>Send message</button>
+      <button onClick={ () => wsTest('test data', {name: 'Vasya'})}>Send message</button>
     </>
   );
 }
