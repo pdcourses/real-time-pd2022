@@ -1,4 +1,4 @@
-const {testHandler} = require('./enentHandlers');
+const {testHandler, messageHandler} = require('./enentHandlers');
 
 module.exports.disconnectHandler = (socket) => {
     socket.on('disconnect', function () {
@@ -7,7 +7,7 @@ module.exports.disconnectHandler = (socket) => {
 }
 
 module.exports.connectionHandler = (socket) => {
-
+    //
     socket.on('test', testHandler);
-
+    socket.on('message', messageHandler);
 };
