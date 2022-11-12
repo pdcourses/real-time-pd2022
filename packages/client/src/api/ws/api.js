@@ -6,10 +6,7 @@ export const wsTest = (data, options) =>
     socket.emit('test', data, options);
 }
 
-export const wsMessage = (data, options) => 
-socket.emit('message', data, options);
-
-/*
 export const emitMessage = (room, message) => 
 socket.emit('message',room, message);
-*/
+
+export const emitJoinToRoom = (room) => socket.emit('join-to-room', room)
