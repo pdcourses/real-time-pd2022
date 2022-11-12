@@ -7,7 +7,10 @@ module.exports.disconnectHandler = (socket) => {
 }
 
 module.exports.connectionHandler = (socket) => {
-    //
+    // рукопожатие handshake
+    const handshake = socket.handshake;
+    console.log('handshake:', handshake);
+
     socket.on('test', testHandler);
     socket.on('message', messageHandler);
 };
