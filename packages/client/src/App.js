@@ -17,7 +17,7 @@ class App extends Component {
   componentDidMount(){
     chatSocket.emit('get-users');
     chatSocket.on('get-users', (users) => {
-      console.log('users:',users);
+      //console.log('users:',users);
       const usersMap = new Map();
       users.forEach( (u) => {
         usersMap.set(u, []);

@@ -1,8 +1,8 @@
-const cors = require('cors');
-const http = require('http');
-const express = require('express');
-const {Server} = require('socket.io');
-const bodyParser = require('body-parser');
+const cors = require("cors");
+const http = require("http");
+const express = require("express");
+const { Server } = require("socket.io");
+const bodyParser = require("body-parser");
 
 const app = express();
 app.use(cors());
@@ -15,55 +15,37 @@ const io = new Server(httpServer, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
-  }
+  },
 });
 
-const wsHandler = require('./ws');
+const wsHandler = require("./ws");
 
-const chat = io.of('/chat')
-		.on('connection', function connectionHandler(socket) {
+const chat = io
+  .of("/chat")
+  .on("connection", function connectionHandler(socket) {
+    socket.broadcast.emit("new-user", socket.id);
+    socket.on("send-message", (to, message) => {
+      message.owner = socket.id;
+      socket.to(to).emit("private-message", message);
+    });
 
-			socket.broadcast.emit('new-user', socket.id);
+    socket.on("get-users", () => {
+      const clients = io.of("/chat").sockets;
+	  //console.log('clients::::::', clients);
+      const users = [...clients];
+      users.forEach((u, i) => u.splice(1));
+      socket.emit("get-users", users);
+    });
 
-			socket.on('send-message', (to, message) => {
+    socket.on("disconnect", () => {
+      chat.emit("user-leave", socket.id);
+    });
+  });
 
-				message.owner = socket.id;
-
-				socket.to(to).emit('private-message', message);
-
-			});
-
-			socket.on('get-users', () => {
-          const clients = io.of('/chat').sockets;
-					const users = [...clients];
-          users.forEach((u,i) => u.splice(1));
-          /*
-          const sendUsers = [];
-          for(let i=0; i<users.length; i++){
-            //console.log(`client ##${i}`, users[i]);
-            sendUsers[i]=users[i][0];
-          }
-          console.log('clients in chats::', sendUsers);
-          */
-					socket.emit('get-users', users);
-			});
-
-			socket.on('disconnect', () => {
-
-				chat.emit('user-leave', socket.id);
-
-			});
-
-		});
-
-const serverEvent = io.of('/events')
-		.on('connecton', function(socket) {
-
-		});
-
-
+const serverEvent = io.of("/events").on("connecton", function (socket) {});
 
 const PORT = process.env.PORT || 5000;
 
-httpServer.listen(PORT,
-		() => console.log(`Example app listening on port ${ PORT }!`));
+httpServer.listen(PORT, () =>
+  console.log(`Example app listening on port ${PORT}!`)
+);

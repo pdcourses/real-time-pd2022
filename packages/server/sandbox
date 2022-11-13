@@ -1,0 +1,78 @@
+//model (sequelize)
+//model Message - text (string), timestamps (time) + owner (userId <- User) + chatId
+
+//controller
+const {Message} = require('./../models');
+module.exports.getMessages = async(req,res,next) => {
+    try{
+        const msgs = await Message.find().limit(10);
+        res.status(200).send({data: msgs});
+    } catch (err){
+        res.status(500).send();
+    }
+}
+// router
+const msgController = require('./../controllers');
+const { Router } = require("express");
+const router = Router();
+const msgRouter = Router();
+msgRouter.use('/', msgController.getMessages);
+router.use('/messages', msgRouter);
+
+
+/*
+server
+*/
+
+const http = require('http');
+const {Server} = require('socket.io');
+const app = require('./app.js');
+
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: 'http://localhost:5000',
+        methods: ["GET", "POST"],
+    }
+});
+
+io.of('/chat').on('connection', (socket) => {
+    socket.on();
+});
+
+httpServer.listen(5000, '127.0.0.1', ()=> console.log('Server is listening....'));
+
+/*
+clients part!!!!!!
+*/
+
+import axios from 'axios';
+import {io} from 'socket.io-client'; 
+const baseURL = 'ws://127.0.0.1:5000';
+const socket = io(baseURL);
+import store from '../store.js';
+import {newMsgSuccess, newMsgError} from '../actions/actionCreators';
+
+const EVENTS_CHAT = {
+    NEW_MSG: 'NEW_MSG',
+    ERROR_MSG: 'ERROR_MSG'
+};
+
+socket.on(EVENTS_CHAT.NEW_MSG, (msg) => {
+    const data = JSON.parse(msg);
+    store.dispatch(newMsgSuccess(data));    
+});
+
+socket.on(EVENTS_CHAT.ERROR_MSG, (err) => {
+    const msg_error = JSON.parse(err);
+    store.dispatch(newMsgError(msg_error));
+});
+
+export const sendNewMessage = (data) => {
+    socket.emit(EVENTS_CHAT.NEW_MSG, JSON.stringify(data));
+}
+
+// http localhost:3000/api
+
+const baseHTTP = axios.create({baseURL: 'http://127.0.0.1:3000/api'});
+export const getMessages = () => baseHTTP.get('/messages');
